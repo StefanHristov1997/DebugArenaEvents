@@ -4,5 +4,5 @@ import com.debugarenaevents.model.dto.AddEventDTO;
 
 public interface EventService {
 
-    void registerEvent(AddEventDTO);
+    void registerEvent(AddEventDTO addEventDTO);
 }
