@@ -1,12 +1,15 @@
 package com.debugarenaevents.service.impl;
 
 import com.debugarenaevents.model.dto.AddEventDTO;
+import com.debugarenaevents.model.dto.EventDTO;
 import com.debugarenaevents.model.entity.Event;
 import com.debugarenaevents.repository.EventRepository;
 import com.debugarenaevents.service.EventService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class EventServiceImpl implements EventService {
@@ -27,5 +30,14 @@ public class EventServiceImpl implements EventService {
         Event eventToSave = mapper.map(addEventDTO, Event.class);
 
         eventRepository.save(eventToSave);
+    }
+
+    @Override
+    public List<EventDTO> getAllEvents() {
+        return eventRepository
+                .findAll()
+                .stream()
+                .map(event -> mapper.map(event, EventDTO.class))
+                .toList();
     }
 }
