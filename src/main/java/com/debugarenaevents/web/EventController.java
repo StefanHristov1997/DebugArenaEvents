@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/events")
+@RequestMapping("/events")
 public class EventController {
 
     private final EventService eventService;
@@ -21,7 +21,7 @@ public class EventController {
         this.eventService = eventService;
     }
 
-    @PostMapping("register-event")
+    @PostMapping
     public ResponseEntity<EventDTO> registerEvent(@RequestBody AddEventDTO addEventDTO) {
 
         eventService.registerEvent(addEventDTO);

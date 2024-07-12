@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @Entity
@@ -15,15 +18,22 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "author_name", nullable = false)
-    private String authorName;
-
     @Column(unique = true, nullable = false)
     private String title;
 
     @Column(nullable = false)
     private String description;
 
+    @Column(nullable = false)
+    private LocalDateTime date;
+
+    @Column(name = "author_name", nullable = false)
+    private String authorName;
+
+    @Column(name = "author_email", nullable = false)
+    private String authorEmail;
+
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private VideoPlatformEnum platform;
 }
