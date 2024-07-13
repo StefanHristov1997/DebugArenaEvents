@@ -40,4 +40,12 @@ public class EventServiceImpl implements EventService {
                 .map(event -> mapper.map(event, EventDTO.class))
                 .toList();
     }
+
+    @Override
+    public EventDTO getEventById(Long id) {
+        return eventRepository
+                .findById(id)
+                .map(event -> mapper.map(event, EventDTO.class))
+                .orElseThrow(IllegalArgumentException::new);
+    }
 }

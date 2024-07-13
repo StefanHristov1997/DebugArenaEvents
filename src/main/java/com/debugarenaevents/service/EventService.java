@@ -10,4 +10,6 @@ public interface EventService {
     void registerEvent(AddEventDTO addEventDTO);
 
     List<EventDTO> getAllEvents();
+
+    EventDTO getEventById(Long id);
 }

@@ -5,7 +5,9 @@ import com.debugarenaevents.model.dto.EventDTO;
 import com.debugarenaevents.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -20,13 +22,25 @@ public class EventController {
         this.eventService = eventService;
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<EventDTO> getEventById(@PathVariable("id") Long id) {
+
+        EventDTO eventDTO = eventService.getEventById(id);
+
+        return ResponseEntity.ok(eventDTO);
+    }
+
     @GetMapping
     public ResponseEntity<List<EventDTO>> getAllEvents() {
         return ResponseEntity.ok(eventService.getAllEvents());
     }
 
     @PostMapping
-    public ResponseEntity<EventDTO> registerEvent(@RequestBody AddEventDTO addEventDTO) {
+    public ResponseEntity<EventDTO> registerEvent(
+            @RequestBody AddEventDTO addEventDTO,
+            BindingResult bindingResult,
+            RedirectAttributes rAtt) {
+
 
         eventService.registerEvent(addEventDTO);
         return ResponseEntity.ok().build();
