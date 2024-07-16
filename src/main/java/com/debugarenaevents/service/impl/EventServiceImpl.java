@@ -9,6 +9,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -47,5 +48,14 @@ public class EventServiceImpl implements EventService {
                 .findById(id)
                 .map(event -> mapper.map(event, EventDTO.class))
                 .orElseThrow(IllegalArgumentException::new);
+    }
+
+    @Override
+    public List<EventDTO> getWeeklyEvents() {
+        return eventRepository
+                .findEventsByDateBetween(LocalDateTime.now(), LocalDateTime.now().plusDays(7))
+                .stream()
+                .map(event -> mapper.map(event, EventDTO.class))
+                .toList();
     }
 }

@@ -22,6 +22,13 @@ public class EventController {
         this.eventService = eventService;
     }
 
+    @PostMapping
+    public ResponseEntity<EventDTO> registerEvent(@RequestBody AddEventDTO addEventDTO) {
+
+        eventService.registerEvent(addEventDTO);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<EventDTO> getEventById(@PathVariable("id") Long id) {
 
@@ -30,19 +37,13 @@ public class EventController {
         return ResponseEntity.ok(eventDTO);
     }
 
+    @GetMapping("/weekly-events")
+    public ResponseEntity<List<EventDTO>> getWeeklyEvents() {
+        return ResponseEntity.ok(eventService.getWeeklyEvents());
+    }
+
     @GetMapping
     public ResponseEntity<List<EventDTO>> getAllEvents() {
         return ResponseEntity.ok(eventService.getAllEvents());
-    }
-
-    @PostMapping
-    public ResponseEntity<EventDTO> registerEvent(
-            @RequestBody AddEventDTO addEventDTO,
-            BindingResult bindingResult,
-            RedirectAttributes rAtt) {
-
-
-        eventService.registerEvent(addEventDTO);
-        return ResponseEntity.ok().build();
     }
 }
