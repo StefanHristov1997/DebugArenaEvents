@@ -1,18 +1,18 @@
 package com.debugarenaevents.web;
 
+import com.debugarenaevents.exeption.ObjectNotFoundException;
 import com.debugarenaevents.model.dto.AddEventDTO;
 import com.debugarenaevents.model.dto.EventDTO;
 import com.debugarenaevents.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/events")
+@RequestMapping("/api/events")
 public class EventController {
 
     private final EventService eventService;
@@ -22,28 +22,37 @@ public class EventController {
         this.eventService = eventService;
     }
 
-    @PostMapping
-    public ResponseEntity<EventDTO> registerEvent(@RequestBody AddEventDTO addEventDTO) {
+    @PostMapping("/create")
+    public ResponseEntity<String> registerEvent(@RequestBody AddEventDTO addEventDTO) {
 
         eventService.registerEvent(addEventDTO);
-        return ResponseEntity.ok().build();
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<EventDTO> getEventById(@PathVariable("id") Long id) {
-
-        EventDTO eventDTO = eventService.getEventById(id);
-
-        return ResponseEntity.ok(eventDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.getEventById(id));
     }
 
     @GetMapping("/weekly-events")
     public ResponseEntity<List<EventDTO>> getWeeklyEvents() {
-        return ResponseEntity.ok(eventService.getWeeklyEvents());
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.getWeeklyEvents());
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<EventDTO>> getAllEvents() {
-        return ResponseEntity.ok(eventService.getAllEvents());
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.getAllEvents());
+    }
+
+    @GetMapping("/check")
+    public ResponseEntity<String> checkServerStatus() {
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.checkServerStatus());
+    }
+
+    @ResponseStatus(code = HttpStatus.NOT_FOUND)
+    @ExceptionHandler(ObjectNotFoundException.class)
+    public ResponseEntity<String> handleEventNotFound() {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found");
     }
 }
