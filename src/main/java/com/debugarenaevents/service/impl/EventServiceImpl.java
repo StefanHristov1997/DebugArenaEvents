@@ -1,5 +1,6 @@
 package com.debugarenaevents.service.impl;
 
+import com.debugarenaevents.exeption.ObjectNotFoundException;
 import com.debugarenaevents.model.dto.AddEventDTO;
 import com.debugarenaevents.model.dto.EventDTO;
 import com.debugarenaevents.model.entity.Event;
@@ -47,7 +48,7 @@ public class EventServiceImpl implements EventService {
         return eventRepository
                 .findById(id)
                 .map(event -> mapper.map(event, EventDTO.class))
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new ObjectNotFoundException("Event with id " + id + " not found"));
     }
 
     @Override
@@ -57,5 +58,10 @@ public class EventServiceImpl implements EventService {
                 .stream()
                 .map(event -> mapper.map(event, EventDTO.class))
                 .toList();
+    }
+
+    @Override
+    public String checkServerStatus() {
+        return "";
     }
 }

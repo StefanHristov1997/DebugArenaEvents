@@ -2,6 +2,7 @@ package com.debugarenaevents.service;
 
 import com.debugarenaevents.model.dto.AddEventDTO;
 import com.debugarenaevents.model.dto.EventDTO;
+import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,4 +17,6 @@ public interface EventService {
     EventDTO getEventById(Long id);
 
     List<EventDTO> getWeeklyEvents();
+
+    String checkServerStatus();
 }
