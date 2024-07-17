@@ -4,12 +4,17 @@ import com.debugarenaevents.exeption.ObjectNotFoundException;
 import com.debugarenaevents.model.dto.AddEventDTO;
 import com.debugarenaevents.model.dto.EventDTO;
 import com.debugarenaevents.service.EventService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/events")
@@ -23,11 +28,12 @@ public class EventController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> registerEvent(@RequestBody AddEventDTO addEventDTO) {
+    public ResponseEntity<String> registerEvent(
+            @Valid @RequestBody AddEventDTO addEventDTO) {
 
         eventService.registerEvent(addEventDTO);
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return new ResponseEntity<>("Event created successfully", HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
@@ -54,5 +60,17 @@ public class EventController {
     @ExceptionHandler(ObjectNotFoundException.class)
     public ResponseEntity<String> handleEventNotFound() {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found");
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 }
