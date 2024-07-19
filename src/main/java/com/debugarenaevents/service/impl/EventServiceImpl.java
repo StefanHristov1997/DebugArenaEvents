@@ -28,10 +28,12 @@ public class EventServiceImpl implements EventService {
 
 
     @Override
-    public void registerEvent(AddEventDTO addEventDTO) {
+    public EventDTO registerEvent(AddEventDTO addEventDTO) {
         Event eventToSave = mapper.map(addEventDTO, Event.class);
 
         eventRepository.save(eventToSave);
+
+        return mapper.map(eventToSave, EventDTO.class);
     }
 
     @Override

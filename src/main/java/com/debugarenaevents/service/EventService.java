@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface EventService {
 
-    void registerEvent(AddEventDTO addEventDTO);
+    EventDTO registerEvent(AddEventDTO addEventDTO);
 
     List<EventDTO> getAllEvents();
 

@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,12 +29,19 @@ public class EventController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> registerEvent(
+    public ResponseEntity<EventDTO> registerEvent(
             @Valid @RequestBody AddEventDTO addEventDTO) {
 
-        eventService.registerEvent(addEventDTO);
+        EventDTO registerEvent = eventService.registerEvent(addEventDTO);
 
-        return new ResponseEntity<>("Event created successfully", HttpStatus.CREATED);
+        return ResponseEntity.created(
+                ServletUriComponentsBuilder
+                        .fromCurrentRequest()
+                        .path("/{id}")
+                        .buildAndExpand(registerEvent.getId())
+                        .toUri()
+
+        ).body(registerEvent);
     }
 
     @GetMapping("/{id}")
