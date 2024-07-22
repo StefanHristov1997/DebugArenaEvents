@@ -1,15 +1,12 @@
 package com.debugarenaevents.web;
 
-import com.debugarenaevents.exeption.ObjectNotFoundException;
 import com.debugarenaevents.model.entity.Event;
 import com.debugarenaevents.model.enums.VideoPlatformEnum;
 import com.debugarenaevents.repository.EventRepository;
-import com.debugarenaevents.service.EventService;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
@@ -34,10 +32,12 @@ class EventControllerIT {
     private EventRepository eventRepository;
 
     @Autowired
-    private EventService eventService;
-
-    @Autowired
     private MockMvc mockMvc;
+
+    @BeforeEach
+    void clearDB() {
+        eventRepository.deleteAll();
+    }
 
     @Test
     void testCreateEvent() throws Exception {
@@ -63,8 +63,8 @@ class EventControllerIT {
                 .andExpect(header().exists("Location"))
                 .andReturn();
 
-        String resultBody = result.getResponse().getContentAsString();
-        Integer id = JsonPath.read(resultBody, "$.id");
+        String responseBody = result.getResponse().getContentAsString();
+        Integer id = JsonPath.read(responseBody, "$.id");
 
         Optional<Event> createdEvent = eventRepository.findById(Long.valueOf(id));
 
@@ -82,6 +82,7 @@ class EventControllerIT {
     void testGetEventById() throws Exception {
 
         Event event = createTestEvent();
+        event.setTitle("Test Get Event By Id");
         eventRepository.save(event);
 
         mockMvc.perform(get("/api/events/{id}", event.getId())
@@ -91,6 +92,55 @@ class EventControllerIT {
                 .andExpect(jsonPath("$.title", is(event.getTitle())))
                 .andExpect(jsonPath("$.description", is(event.getDescription())))
                 .andExpect(jsonPath("$.platform", is(event.getPlatform().toString())));
+    }
+
+    @Test
+    void testGetAllEvents() throws Exception {
+
+        Event firstEvent = createTestEvent();
+        firstEvent.setTitle("First Event");
+
+        Event secondEvent = createTestEvent();
+        secondEvent.setTitle("Second Event");
+
+        List<Event> testEvents = List.of(firstEvent, secondEvent);
+
+        eventRepository.saveAll(testEvents);
+
+        mockMvc.perform(get("/api/events/all"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id", is(firstEvent.getId().intValue())))
+                .andExpect(jsonPath("$[0].title", is(firstEvent.getTitle())))
+                .andExpect(jsonPath("$[0].description", is(firstEvent.getDescription())))
+                .andExpect(jsonPath("$[0].authorName", is(firstEvent.getAuthorName())))
+                .andExpect(jsonPath("$[0].authorEmail", is(firstEvent.getAuthorEmail())))
+                .andExpect(jsonPath("$[0].platform", is(firstEvent.getPlatform().toString())))
+                .andExpect(jsonPath("$[1].id", is(secondEvent.getId().intValue())))
+                .andExpect(jsonPath("$[1].title", is(secondEvent.getTitle())))
+                .andExpect(jsonPath("$[1].description", is(secondEvent.getDescription())))
+                .andExpect(jsonPath("$[1].authorName", is(secondEvent.getAuthorName())))
+                .andExpect(jsonPath("$[1].authorEmail", is(secondEvent.getAuthorEmail())))
+                .andExpect(jsonPath("$[1].platform", is(secondEvent.getPlatform().toString())));
+    }
+
+    @Test
+    void testGetWeeklyEvents() throws Exception {
+
+        Event event = createTestEvent();
+        event.setTitle("Test Weekly Event");
+        event.setDate(LocalDateTime.now().plusDays(7));
+
+        eventRepository.save(event);
+
+        mockMvc.perform(get("/api/events/weekly-events")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id", is(event.getId().intValue())))
+                .andExpect(jsonPath("$[0].title", is(event.getTitle())))
+                .andExpect(jsonPath("$[0].description", is(event.getDescription())))
+                .andExpect(jsonPath("$[0].authorName", is(event.getAuthorName())))
+                .andExpect(jsonPath("$[0].authorEmail", is(event.getAuthorEmail())))
+                .andExpect(jsonPath("$[0].platform", is(event.getPlatform().toString())));
     }
 
     @Test
@@ -104,7 +154,6 @@ class EventControllerIT {
 
         Event testEvent = new Event();
 
-        testEvent.setTitle("test title");
         testEvent.setDescription("test description");
         testEvent.setAuthorName("test name");
         testEvent.setAuthorEmail("test@test.com");
