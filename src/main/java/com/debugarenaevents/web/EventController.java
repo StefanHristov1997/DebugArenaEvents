@@ -32,7 +32,7 @@ public class EventController {
     public ResponseEntity<EventDTO> registerEvent(
             @Valid @RequestBody AddEventDTO addEventDTO) {
 
-        EventDTO registerEvent = eventService.registerEvent(addEventDTO);
+        EventDTO registerEvent = eventService.createEvent(addEventDTO);
 
         return ResponseEntity.created(
                 ServletUriComponentsBuilder
@@ -49,14 +49,14 @@ public class EventController {
         return ResponseEntity.status(HttpStatus.OK).body(eventService.getEventById(id));
     }
 
-    @GetMapping("/weekly-events")
-    public ResponseEntity<List<EventDTO>> getWeeklyEvents() {
-        return ResponseEntity.status(HttpStatus.OK).body(eventService.getWeeklyEvents());
-    }
-
     @GetMapping("/all")
     public ResponseEntity<List<EventDTO>> getAllEvents() {
         return ResponseEntity.status(HttpStatus.OK).body(eventService.getAllEvents());
+    }
+
+    @GetMapping("/weekly-events")
+    public ResponseEntity<List<EventDTO>> getWeeklyEvents() {
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.getWeeklyEvents());
     }
 
     @GetMapping("/check")
