@@ -55,6 +55,11 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    public void deleteEvent(Long eventId) {
+        eventRepository.deleteById(eventId);
+    }
+
+    @Override
     public List<EventDTO> getWeeklyEvents() {
         return eventRepository
                 .findEventsByDateBetween(LocalDateTime.now(), LocalDateTime.now().plusDays(7))

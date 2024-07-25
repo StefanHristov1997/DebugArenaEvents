@@ -49,6 +49,11 @@ public class EventController {
         return ResponseEntity.status(HttpStatus.OK).body(eventService.getEventById(id));
     }
 
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteEvent(@PathVariable("id") Long eventId) {
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
     @GetMapping("/all")
     public ResponseEntity<List<EventDTO>> getAllEvents() {
         return ResponseEntity.status(HttpStatus.OK).body(eventService.getAllEvents());

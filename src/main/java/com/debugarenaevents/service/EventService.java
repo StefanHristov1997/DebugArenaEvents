@@ -13,6 +13,8 @@ public interface EventService {
 
     EventDTO getEventById(Long id);
 
+    void deleteEvent(Long eventId);
+
     List<EventDTO> getWeeklyEvents();
 
     String checkServerStatus();
