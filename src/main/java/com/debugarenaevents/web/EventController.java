@@ -50,7 +50,7 @@ public class EventController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteEvent(@PathVariable("id") Long eventId) {
+    public ResponseEntity<?> deleteEvent(@PathVariable("id") Long eventId) {
         eventService.deleteEvent(eventId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
@@ -66,13 +66,13 @@ public class EventController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<String> checkServerStatus() {
+    public ResponseEntity<?> checkServerStatus() {
         return ResponseEntity.status(HttpStatus.OK).body(eventService.checkServerStatus());
     }
 
     @ResponseStatus(code = HttpStatus.NOT_FOUND)
     @ExceptionHandler(ObjectNotFoundException.class)
-    public ResponseEntity<String> handleEventNotFound() {
+    public ResponseEntity<?> handleEventNotFound() {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found");
     }
 
